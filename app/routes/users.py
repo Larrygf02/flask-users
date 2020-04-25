@@ -12,8 +12,6 @@ def login():
     print(body)
     user = User.query.filter_by(**body)
     if exists(user):
-        return jsonify({"status": True})
-    #data = []
-    """ for user in users:
-        data.append({**to_dict(user, ['password'])}) """
+        data = {**to_dict(user.first(), ['password'])}
+        return jsonify({"status": True, "data": data})
     return jsonify({"status": False})
