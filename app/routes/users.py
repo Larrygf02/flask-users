@@ -1,5 +1,5 @@
 from app import app
-from models import User, Rol, UsersRol, db
+from models import User, Rol, UsersRol,db, RolsFunctionality, Functionality
 from flask import jsonify, request
 from utils import to_dict, exists
 @app.route("/")
@@ -27,6 +27,13 @@ def rols(user_id):
 
 @app.route("/permissions/<user_id>", methods=["GET"])
 def permissions(user_id):
-    return None
+    query = db.session.query(User, Rol, UsersRol, RolsFunctionality, Functionality).filter(
+        User.id == UsersRol.user_id).filter(Rol.id == UsersRol.rols_id).filter(
+        User.id == user_id).filter(Functionality.id == RolsFunctionality.functionality_id).filter(
+        RolsFunctionality.rol_id == UsersRol.rols_id)
+    data = []
+    for user, rl, userrol, rolfunc, func in query.all():
+        data.append({**to_dict(func, ['view_id'])})
+    return jsonify({"status": True, "data": data})
         
     
